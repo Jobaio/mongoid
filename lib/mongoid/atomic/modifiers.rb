@@ -68,7 +68,7 @@ module Mongoid
         modifications.each_pair do |field, value|
           push_fields[field] = field
           mods = push_conflict?(field) ? conflicting_pushes : pushes
-          add_operation(mods, field, Array.wrap(value))
+          add_operation(mods, field, { "$each" => Array.wrap(value) })
         end
       end
 
@@ -190,7 +190,7 @@ module Mongoid
       #
       # @since 2.2.0
       def conflicting_pushes
-        conflicts["$pushAll"] ||= {}
+        conflicts["$push"] ||= {}
       end
 
       # Get the conflicting set modifications.
@@ -277,16 +277,16 @@ module Mongoid
         self["$pull"] ||= {}
       end
 
-      # Get the $pushAll operations or intialize a new one.
+      # Get the $push operations or intialize a new one.
       #
-      # @example Get the $pushAll operations.
+      # @example Get the $push operations.
       #   modifiers.pushes
       #
-      # @return [ Hash ] The $pushAll operations.
+      # @return [ Hash ] The $push operations.
       #
       # @since 2.1.0
       def pushes
-        self["$pushAll"] ||= {}
+        self["$push"] ||= {}
       end
 
       # Get the $set operations or intialize a new one.

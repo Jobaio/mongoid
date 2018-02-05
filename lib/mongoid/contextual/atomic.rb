@@ -106,10 +106,10 @@ module Mongoid
         query.update_all("$push" => collect_operations(pushes))
       end
 
-      # Perform an atomic $pushAll operation on the matching documents.
+      # Perform an atomic $push/$each operation on the matching documents.
       #
       # @example Push the values to the matching docs.
-      #   context.push(members: [ "Alan", "Fletch" ])
+      #   context.push(members: { "$each" => [ "Alan", "Fletch" ] })
       #
       # @param [ Hash ] pushes The operations.
       #
@@ -117,7 +117,7 @@ module Mongoid
       #
       # @since 3.0.0
       def push_all(pushes)
-        query.update_all("$pushAll" => collect_operations(pushes))
+        query.update_all("$push" => collect_operations_eached(pushes))
       end
 
       # Perform an atomic $rename of fields on the matching documents.
@@ -168,6 +168,13 @@ module Mongoid
       end
 
       private
+
+      def collect_operations_eached(ops)
+        ops.inject({}) do |operations, (field, value)|
+          operations[database_field_name(field)] = { "$each" => value.mongoize }
+          operations
+        end
+      end
 
       def collect_operations(ops)
         ops.inject({}) do |operations, (field, value)|

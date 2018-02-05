@@ -76,13 +76,14 @@ describe Mongoid::Atomic do
             person.addresses.build(street: "Oxford St")
           end
 
-          it "returns a $set and $pushAll for modifications" do
+          it "returns a $set and $push with $each for modifications" do
             expect(person.atomic_updates).to eq(
               {
                 "$set" => { "title" => "Sir" },
-                "$pushAll" => { "addresses" => [
+                "$push" => { "addresses" => { "$each" => [
                     { "_id" => "oxford-st", "street" => "Oxford St" }
                   ]}
+                }
               }
             )
           end
@@ -197,8 +198,8 @@ describe Mongoid::Atomic do
                       "addresses.0.street" => "Bond St"
                     },
                     conflicts: {
-                      "$pushAll" => {
-                        "addresses.0.locations" => [{ "_id" => location.id, "name" => "Home" }]
+                      "$push" => {
+                        "addresses.0.locations" => { "$each" => [{ "_id" => location.id, "name" => "Home" }] }
                       }
                     }
                   }
@@ -215,8 +216,8 @@ describe Mongoid::Atomic do
                       "addresses.0.street" => "Bond St"
                     },
                     conflicts: {
-                      "$pushAll" => {
-                        "addresses.0.locations" => [{ "_id" => location.id, "name" => "Home" }]
+                      "$push" => {
+                        "addresses.0.locations" => { "$each" => [{ "_id" => location.id, "name" => "Home" }] }
                       }
                     }
                   }
@@ -263,15 +264,17 @@ describe Mongoid::Atomic do
                       "addresses.0.street" => "Bond St"
                     },
                     conflicts: {
-                      "$pushAll" => {
-                        "addresses" => [{
-                          "_id" => new_address.id,
-                          "street" => "Another",
-                          "locations" => [
-                            "_id" => location.id,
-                            "name" => "Home"
-                          ]
-                        }]
+                      "$push" => {
+                        "addresses" => {
+                          "$each" => [{
+                            "_id" => new_address.id,
+                            "street" => "Another",
+                            "locations" => [
+                              "_id" => location.id,
+                              "name" => "Home"
+                            ]
+                          }]
+                        }
                       }
                     }
                   }
@@ -310,15 +313,17 @@ describe Mongoid::Atomic do
                   "$set" => {
                     "title" => "Sir"
                   },
-                  "$pushAll" => {
-                    "addresses" => [{
-                      "_id" => new_address.id,
-                      "street" => "Ipanema",
-                      "locations" => [
-                        "_id" => location.id,
-                        "name" => "Home"
-                      ]
-                    }]
+                  "$push" => {
+                    "addresses" => {
+                      "$each" => [{
+                        "_id" => new_address.id,
+                        "street" => "Ipanema",
+                        "locations" => [
+                          "_id" => location.id,
+                          "name" => "Home"
+                        ]
+                      }]
+                    }
                   },
                   conflicts: {
                     "$set" => { "addresses.0.street"=>"Bond St" }
@@ -339,21 +344,23 @@ describe Mongoid::Atomic do
             address.locations.build(name: "Home")
           end
 
-          it "returns the proper $sets and $pushAlls for all levels" do
+          it "returns the proper $sets and $push with $each for all levels" do
             expect(person.atomic_updates).to eq(
               {
                 "$set" => {
                   "title" => "Sir",
                 },
-                "$pushAll" => {
-                  "addresses" => [{
-                    "_id" => address.id,
-                    "street" => "Another",
-                    "locations" => [
-                      "_id" => location.id,
-                      "name" => "Home"
-                    ]
-                  }]
+                "$push" => {
+                  "addresses" => {
+                    "$each" => [{
+                      "_id" => address.id,
+                      "street" => "Another",
+                      "locations" => [
+                        "_id" => location.id,
+                        "name" => "Home"
+                      ]
+                    }]
+                  }
                 }
               }
             )

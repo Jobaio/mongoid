@@ -17,8 +17,8 @@ describe Mongoid::Positional do
           "children.0.field" => "value",
           "children.0.children.1.children.3.field" => "value"
         },
-        "$pushAll" => {
-          "children.0.children.1.children.3.fields" => [ "value", "value" ]
+        "$push" => {
+          "children.0.children.1.children.3.fields" => { "$each" => [ "value", "value" ] }
         }
       }
     end
@@ -114,8 +114,8 @@ describe Mongoid::Positional do
               "children.$.field" => "value",
               "children.$.children.1.children.3.field" => "value"
             },
-            "$pushAll" => {
-              "children.$.children.1.children.3.fields" => [ "value", "value" ]
+            "$push" => {
+              "children.$.children.1.children.3.fields" => { "$each" => [ "value", "value" ] }
             }
           }
         end
@@ -142,8 +142,8 @@ describe Mongoid::Positional do
               "children.0.field" => "value",
               "children.0.children.1.children.3.field" => "value"
             },
-            "$pushAll" => {
-              "children.0.children.1.children.3.fields" => [ "value", "value" ]
+            "$push" => {
+              "children.0.children.1.children.3.fields" => { "$each" => [ "value", "value" ] }
             }
           }
         end
@@ -171,8 +171,8 @@ describe Mongoid::Positional do
             "children.$.field" => "value",
             "children.0.children.$.children.3.field" => "value"
           },
-          "$pushAll" => {
-            "children.0.children.$.children.3.fields" => [ "value", "value" ]
+          "$push" => {
+            "children.0.children.$.children.3.fields" => { "$each" => [ "value", "value" ] }
           }
         }
       end
@@ -204,8 +204,8 @@ describe Mongoid::Positional do
             "children.$.field" => "value",
             "children.0.children.1.children.$.field" => "value"
           },
-          "$pushAll" => {
-            "children.0.children.1.children.$.fields" => [ "value", "value" ]
+          "$push" => {
+            "children.0.children.1.children.$.fields" => { "$each" => [ "value", "value" ] }
           }
         }
       end
